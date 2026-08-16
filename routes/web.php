@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\RendezVousController as AdminRendezVousController;
 use App\Http\Controllers\CreneauController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RendezVousController;
@@ -43,28 +44,23 @@ Route::middleware('auth')->group(function () {
     // CRÉNEAUX
     // =========================
 
-    // Voir la liste des créneaux
     Route::get('/creneaux', [CreneauController::class, 'index'])
         ->name('creneaux.index');
 
-    // Voir un créneau
     Route::get('/creneaux/{creneau}', [CreneauController::class, 'show'])
         ->name('creneaux.show');
 
 
     // =========================
-    // RENDEZ-VOUS
+    // RENDEZ-VOUS CLIENT
     // =========================
 
-    // Voir mes rendez-vous
     Route::get('/mes-rendez-vous', [RendezVousController::class, 'index'])
         ->name('rendezvous.index');
 
-    // Réserver un créneau
     Route::post('/creneaux/{creneau}/reserver', [RendezVousController::class, 'store'])
         ->name('rendezvous.store');
 
-    // Annuler un rendez-vous
     Route::delete('/rendez-vous/{rendezVous}', [RendezVousController::class, 'destroy'])
         ->name('rendezvous.destroy');
 });
@@ -80,25 +76,44 @@ Route::middleware(['auth', 'admin'])
     ->prefix('admin')
     ->group(function () {
 
-        // Créer un créneau
+        // =========================
+        // CRÉNEAUX ADMIN
+        // =========================
+
+        // Créer
         Route::get('/creneaux/create', [CreneauController::class, 'create'])
             ->name('creneaux.create');
 
         Route::post('/creneaux', [CreneauController::class, 'store'])
             ->name('creneaux.store');
 
-
-        // Modifier un créneau
+        // Modifier
         Route::get('/creneaux/{creneau}/edit', [CreneauController::class, 'edit'])
             ->name('creneaux.edit');
 
         Route::put('/creneaux/{creneau}', [CreneauController::class, 'update'])
             ->name('creneaux.update');
 
-
-        // Supprimer un créneau
+        // Supprimer
         Route::delete('/creneaux/{creneau}', [CreneauController::class, 'destroy'])
             ->name('creneaux.destroy');
+
+
+        // =========================
+        // RENDEZ-VOUS ADMIN
+        // =========================
+
+        // Voir tous les rendez-vous
+        Route::get('/rendezvous', [AdminRendezVousController::class, 'index'])
+            ->name('admin.rendezvous.index');
+
+        // Confirmer
+        Route::patch('/rendezvous/{rendezVous}/confirmer', [AdminRendezVousController::class, 'confirmer'])
+            ->name('admin.rendezvous.confirmer');
+
+        // Annuler
+        Route::patch('/rendezvous/{rendezVous}/annuler', [AdminRendezVousController::class, 'annuler'])
+            ->name('admin.rendezvous.annuler');
     });
 
 

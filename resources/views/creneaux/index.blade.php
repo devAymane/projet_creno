@@ -76,6 +76,12 @@
                                             Statut
                                         </th>
 
+                                        @if (auth()->user()->role === 'client')
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                                Action
+                                            </th>
+                                        @endif
+
                                         @if (auth()->user()->role === 'admin')
                                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
                                                 Actions
@@ -118,6 +124,43 @@
 
                                             </td>
 
+                                            {{-- Bouton réservation CLIENT --}}
+                                            @if (auth()->user()->role === 'client')
+
+                                                <td class="px-6 py-4">
+
+                                                    @if (!$creneau->rendezVous)
+
+                                                        <form
+                                                            action="{{ route('rendezvous.store', $creneau) }}"
+                                                            method="POST"
+                                                        >
+
+                                                            @csrf
+
+                                                            <button
+                                                                type="submit"
+                                                                class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+                                                            >
+                                                                Réserver
+                                                            </button>
+
+                                                        </form>
+
+                                                    @else
+
+                                                        <span class="text-gray-500">
+                                                            Indisponible
+                                                        </span>
+
+                                                    @endif
+
+                                                </td>
+
+                                            @endif
+
+
+                                            {{-- Actions ADMIN --}}
                                             @if (auth()->user()->role === 'admin')
 
                                                 <td class="px-6 py-4">

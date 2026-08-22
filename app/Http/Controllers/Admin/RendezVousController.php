@@ -4,27 +4,31 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\RendezVous;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\View\View;
 
 class RendezVousController extends Controller
 {
     /**
-     * Afficher tous les rendez-vous.
+     * عرض جميع المواعيد.
      */
-    public function index(): View
+    public function index()
     {
-        $rendezVous = RendezVous::with(['user', 'creneau'])
-            ->latest()
-            ->get();
+        $rendezVous = RendezVous::with([
+            'user',
+            'creneau',
+        ])
+        ->latest()
+        ->get();
 
-        return view('admin.rendezvous.index', compact('rendezVous'));
+        return view(
+            'admin.rendezvous.index',
+            compact('rendezVous')
+        );
     }
 
     /**
-     * Confirmer un rendez-vous.
+     * تأكيد موعد.
      */
-    public function confirmer(RendezVous $rendezVous): RedirectResponse
+    public function confirmer(RendezVous $rendezVous)
     {
         $rendezVous->update([
             'statut' => 'confirme',
@@ -37,9 +41,9 @@ class RendezVousController extends Controller
     }
 
     /**
-     * Annuler un rendez-vous.
+     * إلغاء موعد.
      */
-    public function annuler(RendezVous $rendezVous): RedirectResponse
+    public function annuler(RendezVous $rendezVous)
     {
         $rendezVous->update([
             'statut' => 'annule',

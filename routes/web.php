@@ -4,7 +4,15 @@ use App\Http\Controllers\Admin\RendezVousController as AdminRendezVousController
 use App\Http\Controllers\CreneauController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RendezVousController;
+use App\Models\Creneau;
+use App\Models\RendezVous;
 use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| Public
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/', function () {
     return view('welcome');
@@ -17,7 +25,52 @@ Route::get('/', function () {
 */
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+
+    $user = auth()->user();
+
+    // Dashboard Admin
+if ($user->role === 'admin') {
+
+    $totalCreneaux = Creneau::count();
+
+    $totalRendezVous = RendezVous::count();
+
+    $rendezVousEnAttente = RendezVous::where(
+        'statut',
+        'en_attente'
+    )->count();
+
+    $rendezVousConfirmes = RendezVous::where(
+        'statut',
+        'confirme'
+    )->count();
+
+    return view('dashboard', compact(
+        'totalCreneaux',
+        'totalRendezVous',
+        'rendezVousEnAttente',
+        'rendezVousConfirmes'
+    ));
+}
+
+    // Dashboard Client
+    $prochainsRendezVous = $user->rendezVous()
+        ->with('creneau')
+        ->where('statut', '!=', 'annule')
+        ->whereHas('creneau', function ($query) {
+            $query->whereDate(
+                'date',
+                '>=',
+                now()->toDateString()
+            );
+        })
+        ->latest()
+        ->get();
+
+    return view('dashboard', compact(
+        'prochainsRendezVous'
+    ));
+
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 
@@ -29,7 +82,12 @@ Route::get('/dashboard', function () {
 
 Route::middleware('auth')->group(function () {
 
-    // Profile
+    /*
+    |--------------------------------------------------------------------------
+    | Profile
+    |--------------------------------------------------------------------------
+    */
+
     Route::get('/profile', [ProfileController::class, 'edit'])
         ->name('profile.edit');
 
@@ -40,9 +98,11 @@ Route::middleware('auth')->group(function () {
         ->name('profile.destroy');
 
 
-    // =========================
-    // CRÉNEAUX
-    // =========================
+    /*
+    |--------------------------------------------------------------------------
+    | Créneaux
+    |--------------------------------------------------------------------------
+    */
 
     Route::get('/creneaux', [CreneauController::class, 'index'])
         ->name('creneaux.index');
@@ -51,9 +111,11 @@ Route::middleware('auth')->group(function () {
         ->name('creneaux.show');
 
 
-    // =========================
-    // RENDEZ-VOUS CLIENT
-    // =========================
+    /*
+    |--------------------------------------------------------------------------
+    | Rendez-vous Client
+    |--------------------------------------------------------------------------
+    */
 
     Route::get('/mes-rendez-vous', [RendezVousController::class, 'index'])
         ->name('rendezvous.index');
@@ -76,42 +138,40 @@ Route::middleware(['auth', 'admin'])
     ->prefix('admin')
     ->group(function () {
 
-        // =========================
-        // CRÉNEAUX ADMIN
-        // =========================
+        /*
+        |--------------------------------------------------------------------------
+        | Gestion des créneaux
+        |--------------------------------------------------------------------------
+        */
 
-        // Créer
         Route::get('/creneaux/create', [CreneauController::class, 'create'])
             ->name('creneaux.create');
 
         Route::post('/creneaux', [CreneauController::class, 'store'])
             ->name('creneaux.store');
 
-        // Modifier
         Route::get('/creneaux/{creneau}/edit', [CreneauController::class, 'edit'])
             ->name('creneaux.edit');
 
         Route::put('/creneaux/{creneau}', [CreneauController::class, 'update'])
             ->name('creneaux.update');
 
-        // Supprimer
         Route::delete('/creneaux/{creneau}', [CreneauController::class, 'destroy'])
             ->name('creneaux.destroy');
 
 
-        // =========================
-        // RENDEZ-VOUS ADMIN
-        // =========================
+        /*
+        |--------------------------------------------------------------------------
+        | Gestion des rendez-vous
+        |--------------------------------------------------------------------------
+        */
 
-        // Voir tous les rendez-vous
         Route::get('/rendezvous', [AdminRendezVousController::class, 'index'])
             ->name('admin.rendezvous.index');
 
-        // Confirmer
         Route::patch('/rendezvous/{rendezVous}/confirmer', [AdminRendezVousController::class, 'confirmer'])
             ->name('admin.rendezvous.confirmer');
 
-        // Annuler
         Route::patch('/rendezvous/{rendezVous}/annuler', [AdminRendezVousController::class, 'annuler'])
             ->name('admin.rendezvous.annuler');
     });
@@ -134,4 +194,4 @@ Route::get('/admin-test', function () {
 |--------------------------------------------------------------------------
 */
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

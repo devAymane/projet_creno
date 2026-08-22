@@ -66,11 +66,39 @@
 
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
-        <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
-        </div>
+<div class="pt-2 pb-3 space-y-1">
+
+    <x-responsive-nav-link
+        :href="route('dashboard')"
+        :active="request()->routeIs('dashboard')"
+    >
+        {{ __('Dashboard') }}
+    </x-responsive-nav-link>
+
+    <x-responsive-nav-link
+        :href="route('creneaux.index')"
+        :active="request()->routeIs('creneaux.*')"
+    >
+        {{ __('Créneaux') }}
+    </x-responsive-nav-link>
+
+    <x-responsive-nav-link
+        :href="route('rendezvous.index')"
+        :active="request()->routeIs('rendezvous.*')"
+    >
+        {{ __('Mes rendez-vous') }}
+    </x-responsive-nav-link>
+
+    @if(auth()->user()->role === 'admin')
+        <x-responsive-nav-link
+            :href="route('admin.rendezvous.index')"
+            :active="request()->routeIs('admin.rendezvous.*')"
+        >
+            {{ __('Gestion des rendez-vous') }}
+        </x-responsive-nav-link>
+    @endif
+
+</div>
 
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-gray-200">

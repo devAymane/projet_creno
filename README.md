@@ -1,58 +1,80 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+Créno : App Laravel, Auth Middleware & Tests Unitaires PHPUnit
+Assigné
+fr
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+SH
+Salma Harda
+créé : 10/08/26
+Une application web de prise de rendez-vous développée avec Laravel et Blade, permettant à des clients de réserver un créneau auprès d'un praticien (coiffeur, médecin, garagiste, etc.) et à un administrateur de gérer les créneaux disponibles. L'application repose sur une authentification protégée par middleware Laravel (accès différencié client/administrateur) et sur la logique métier de gestion des créneaux (disponibilité, non chevauchement, annulation). Une part importante du travail consiste à écrire des tests unitaires avec PHPUnit couvrant les modèles Eloquent, les règles métier et les Form Requests .
+Référentiels
+[2023] Développeur web et web mobile
+Compétences transversales
+Contexte du projet
+Vous êtes développeur junior chez WebCraft Studio. Un client indépendant (salon, cabinet, garage) gère encore ses rendez-vous par téléphone et sur un cahier papier : créneaux oubliés, doubles réservations, aucune vue d'ensemble. Il vous confie le développement d'une application Laravel simple permettant à ses clients de réserver un créneau en ligne, et à lui-même de gérer son planning. Le client insiste moins sur la richesse fonctionnelle que sur la fiabilité : il veut être sûr que "l'application ne plante pas et ne double jamais un créneau", ce qui vous amène naturellement aux tests unitaires.
 
-## About Laravel
+**Règles de gestion : **
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Un utilisateur doit être authentifié pour réserver un rendez-vous.
+Deux rôles existent : client et administrateur, distingués par un champ role.
+Seul l'administrateur peut créer, modifier ou supprimer les créneaux disponibles (routes protégées par middleware).
+Un créneau a une date, une heure de début et une durée fixe.
+Un même créneau ne peut pas être réservé par deux clients différents (unicité).
+Un client ne peut pas réserver deux créneaux qui se chevauchent.
+Un rendez-vous a un statut : en attente, confirmé, annulé.
+Un client ne peut annuler que ses propres rendez-vous.
+Un créneau passé ne peut plus être réservé.
+**User Stories :**
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+US1 : En tant que visiteur, je dois pouvoir m'inscrire et me connecter afin d'accéder à la réservation.
+US2 : En tant que client, je dois voir la liste des créneaux disponibles afin de choisir un rendez-vous.
+US3 : En tant que client, je dois pouvoir réserver un créneau libre afin de fixer mon rendez-vous.
+US4 : En tant que client, je dois pouvoir annuler mon propre rendez-vous afin de libérer le créneau.
+US5 : En tant qu'administrateur, je dois gérer les créneaux (CRUD) afin de tenir mon planning à jour.
+US6 : En tant qu'administrateur, je dois accéder à un tableau de bord protégé afin de voir tous les rendez-vous.
+US7 : En tant que développeur, je dois écrire des tests unitaires PHPUnit afin de garantir que les règles métier (non-chevauchement, unicité, autorisations) sont respectées.
+**Étapes d'accompagnement :**
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Étape 1 — Mise en place & authentification : projet Laravel, migrations (users avec role, creneaux, rendez_vous), Laravel Breeze ou auth manuelle, création d'un middleware IsAdmin protégeant les routes d'administration.
+Étape 2 — Modèles & relations Eloquent : modèles User, Creneau, RendezVous avec relations (hasMany/belongsTo), scopes utiles (disponibles(), passés()), méthode métier de détection de chevauchement sur le modèle Creneau.
+Étape 3 — Vues Blade & fonctionnalités : liste des créneaux, formulaire de réservation, page "mes rendez-vous", espace admin (CRUD créneaux) avec layouts Blade et directives @if/@auth/@can.
+Étape 4 — Tests unitaires PHPUnit (cœur du projet) : configuration de la base de test (SQLite en mémoire), tests unitaires sur le modèle Creneau (détection de chevauchement, créneau passé), tests sur les Form Requests (validation des données de réservation), tests sur la logique d'autorisation (un client ne peut pas annuler le rendez-vous d'un autre), utilisation de factories pour générer les données de test.
+Étape 5 — Consolidation & couverture : relecture des tests, ajout de cas limites (créneau à la frontière, double clic de réservation), vérification que chaque règle de gestion possède au moins un test associé.
+Modalités pédagogiques
+Travail en binôme.
+Durée : 5 jours.
+Lancement : 10/08/2026.
+Deadline : 14/08/2026 – 23h59.
+Modalités d'évaluation
+- Entretien : 30 minutes
+- 5 min —> Présentation + démonstration.
+- 10 min — >Code Review & Évaluation des savoirs (Q&A).
+- 15 min — >Mise en situation.
+questions ciblées sur les tests unitaires écrits (pourquoi ce test, que couvre-t-il, que se passe-t-il s'il échoue).
+Livrables
+- Lien GitHub du dépôt (code + historique de commits du binôme).
+- Fichier README expliquant l'installation, le lancement de l'app et l'exécution des tests.
+Critères de performance
+- Application : authentification opérationnelle, middleware bloquant correctement l'accès admin aux clients, CRUD des créneaux fonctionnel, réservation empêchant tout chevauchement en base.
 
-## Learning Laravel
+- Tests unitaires : suite php artisan test entièrement verte, tests couvrant au moins les règles de non-chevauchement, l'unicité de réservation et une règle d'autorisation, usage cohérent de factories/assertions Laravel, tests indépendants les uns des autres.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
-```
-
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- Qualité générale : code organisé selon les conventions Laravel (Controllers, Models, Requests, Middleware bien séparés), binôme capable de justifier ses choix de tests à l'oral.
+Situation professionnelle
+Moderniser une application web en développant une API REST robuste avec un framework backend
+Besoin visé ou problème rencontré
+Une entreprise dispose d’une application web monolithique nécessitant une modernisation afin d’améliorer sa maintenabilité, sa performance et sa capacité à exposer des services à d’autres applications (front-end, mobile, partenaires). Le développeur backend doit structurer l’application autour d’un framework moderne, créer des APIs REST normalisées, organiser la gestion des données et sécuriser les accès utilisateurs, tout en préparant l’application au déploiement dans un environnement serveur.
+13 compétences visées
+Compétences visées
+C2. Contribuer au pilotage de l’organisation du travail individuel et collectif
+niveau 1, imiter
+niveau 2, adapter
+niveau 3, transposer
+C3. Définir le périmètre d’un problème rencontré en adoptant une démarche inductive
+niveau 1, imiter
+niveau 2, adapter
+niveau 3, transposer
+C4. Rechercher de façon méthodique une ou des solutions au problème rencontré
+niveau 1, imiter
+niveau 2, adapter
+niveau 3, transposer
+Afficher la totalité des compétences
